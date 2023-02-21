@@ -3,7 +3,6 @@ import kotlinx.kover.api.KoverMergedConfig
 import kotlinx.kover.api.KoverMergedHtmlConfig
 import kotlinx.kover.api.KoverTaskExtension
 
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
     repositories {
