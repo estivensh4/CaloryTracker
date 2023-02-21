@@ -1,0 +1,71 @@
+apply plugin: 'jacoco'
+
+jacoco {
+    toolVersion = "0.8.5"
+}
+
+configurations.all{
+    resolutionStrategy {
+        eachDependency { details ->
+            if ('org.jacoco' == details.requested.group) {
+                details.useVersion "0.8.7"
+            }
+        }
+    }
+}
+
+tasks.withType(Test) {
+    jacoco.includeNoLocationClasses = true
+    jacoco.excludes = ['jdk.internal.*']
+}
+
+project.afterEvaluate {
+    (android.hasProperty('applicationVariants')
+            ? android.'applicationVariants'
+            : android.'libraryVariants')
+            .all { variant ->
+                def variantName = variant.name
+                def unitTestTask = "test${variantName.capitalize()}UnitTest"
+                def androidTestCoverageTask = "create${variantName.capitalize()}CoverageReport"
+                tasks.create(name: "${unitTestTask}Coverage", type: JacocoReport, dependsOn: [
+                        "$unitTestTask",
+                        "$androidTestCoverageTask"
+                ]) {
+                    group = "Reporting"
+                    description = "Generate Jacoco coverage reports for the ${variantName.capitalize()} build"
+                    reports {
+                        html.enabled = true
+                        xml.enabled = true
+                        csv.enabled = true
+                    }
+                    def filter = [
+                            '**/R.class',
+                            '**/R$*.class',
+                            '**/BuildConfig.*',
+                            '**/Manifest*.*',
+                            '**/*App.*',
+                            '**/*Activity.*',
+                            '**/*Fragment.*',
+                            '**/*Service.*',
+                            '**/*Receiver.*',
+                            '**/*Adapter.*',
+                            '**/*ViewHolder.*',
+                            '**/*ViewPager.*',
+                            '**/*Broadcast.*',
+                            '**/*ViewHolder.*',
+                            '**/*Dialog.*',
+                    ]
+                    def javaTree = fileTree(dir: "${buildDir}/intermediates/javac/debug/classes", excludes: filter)
+                    def debugTree = fileTree(dir: "${buildDir}/tmp/kotlin-classes/${variantName}", excludes: filter)
+                    def mainSrc = "$project.projectDir/src/main/java"
+                    def unitTestsData = "$project.buildDir/jacoco/${unitTestTask}.exec"
+
+                    sourceDirectories.setFrom(files([mainSrc]))
+                    classDirectories.setFrom(files([debugTree, javaTree]))
+                    def androidTestsData = fileTree(dir: "${buildDir}/outputs/code_coverage/${variantName}AndroidTest/connected/",
+                            includes: ["**/*.ec"])
+                    executionData(files([unitTestsData, androidTestsData]))
+                }
+
+            }
+}

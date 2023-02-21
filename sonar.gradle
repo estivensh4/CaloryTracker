@@ -1,0 +1,23 @@
+apply plugin: "org.sonarqube"
+
+sonarqube {
+    properties {
+        property "sonar.projectKey", "test2"
+        property "sonar.host.url", "http://localhost:9000"
+        property "sonar.organization", "sistecredito"
+        property "sonar.sourceEncoding", "UTF-8"
+        property "sonar.login", "sqp_47cced29d1635c164f1bf1e1e62054dd484929bb"
+        //property "sonar.login", "admin"
+        //property "sonar.junit.reportsPath", "${project.buildDir}/test-results/testDebugUnitTest"
+        property "sonar.java.coveragePlugin", "jacoco"
+        property "sonar.sourceEncoding", "UTF-8"
+        property "sonar.sources", "src/main/java"
+        property "sonar.tests", "src/test/java"
+        //property "sonar.android.lint.report", "${project.buildDir}/reports/lint-results.xml"
+        //property "sonar.jacoco.reportPaths", "${project.buildDir}/jacoco/*.exec"
+        //property "sonar.jacoco.itReportPath", fileTree(dir: project.projectDir, includes: ["**/*.ec"])
+        //property "sonar.coverage.jacoco.xmlReportPaths", "${project.buildDir}/reports/jacoco/**/*.xml"
+
+    }
+}
+
